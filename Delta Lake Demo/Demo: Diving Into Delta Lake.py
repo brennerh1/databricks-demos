@@ -102,6 +102,13 @@ cleanup_paths_and_tables()
 
 # COMMAND ----------
 
+# MAGIC %md ## ![Delta Lake Tiny Logo](https://pages.databricks.com/rs/094-YMS-629/images/delta-lake-tiny-logo.png) Delta Lake Cheat Sheet
+# MAGIC Click the image below or visit [dbricks.co/cheatsheet](https://dbricks.co/cheatsheet) to download.
+# MAGIC 
+# MAGIC [<img src="https://pages.databricks.com/rs/094-YMS-629/images/delta-cs-preview.jpg" width=500/>](https://dbricks.co/cheatsheet)
+
+# COMMAND ----------
+
 # MAGIC %md ## ![Delta Lake Tiny Logo](https://pages.databricks.com/rs/094-YMS-629/images/delta-lake-tiny-logo.png) Convert to Delta Lake format
 
 # COMMAND ----------
@@ -112,6 +119,8 @@ cleanup_paths_and_tables()
 # COMMAND ----------
 
 # MAGIC %md <img src="https://databricks.com/wp-content/uploads/2020/12/simplysaydelta.png" width=600/>
+# MAGIC 
+# MAGIC **NOTE:** When using Databricks Runtime 8.0 and above, Delta is the default format -- you no longer need to specify `USING DELTA` or `.format("delta")`.
 
 # COMMAND ----------
 
@@ -487,7 +496,3 @@ spark.sql("SELECT * FROM merge_table").show()
 # COMMAND ----------
 
 cleanup_paths_and_tables()
-
-# COMMAND ----------
-
-# MAGIC %md ## ![Delta Lake Tiny Logo](https://pages.databricks.com/rs/094-YMS-629/images/delta-lake-tiny-logo.png) Delta Lake Cheat Sheet
