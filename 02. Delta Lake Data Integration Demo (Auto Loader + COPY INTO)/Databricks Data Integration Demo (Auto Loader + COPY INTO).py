@@ -2,7 +2,7 @@
 # MAGIC %md > **Note:** Auto Loader is not currently available on Databricks Community Edition. Please contact your Databricks representative to upgrade.
 # MAGIC 
 # MAGIC ### Setup
-# MAGIC Click "Run All" in the the companion `streamfiles.py` notebook in another browser tab right before running this notebook. `streamfiles.py` kicks off writes to the target directory every several seconds that we will use to demonstrate Auto Loader.
+# MAGIC Open the companion `streamfiles.py` notebook in another browser tab, then click "Run All" in that tab right before running this notebook. `streamfiles.py` kicks off writes to the target directory every several seconds that we will use to demonstrate Auto Loader.
 
 # COMMAND ----------
 
