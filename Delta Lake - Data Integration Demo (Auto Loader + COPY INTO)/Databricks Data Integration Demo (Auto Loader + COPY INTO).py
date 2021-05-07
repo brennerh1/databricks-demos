@@ -39,6 +39,7 @@ chkpt_path = "/tmp/iot_stream_chkpts/"
 
 df = (spark.readStream.format("cloudFiles")
       .option("cloudFiles.format", "json")
+      .option("cloudFiles.schemaLocation", chkpt_path)
       .load(input_data_path))
 
 (df.writeStream.format("delta")
@@ -57,6 +58,7 @@ display(df.selectExpr("COUNT(*) AS record_count"))
 
 df = (spark.readStream.format("cloudFiles")
       .option("cloudFiles.format", "json")
+      .option("cloudFiles.schemaLocation", chkpt_path)
       .load(input_data_path))
 
 (df.writeStream.format("delta")
