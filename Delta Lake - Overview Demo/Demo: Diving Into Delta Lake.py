@@ -395,7 +395,7 @@ spark.sql("SELECT COUNT(*) FROM loans_delta VERSION AS OF 0").show()
 
 # COMMAND ----------
 
-# MAGIC %sql UPDATE loans_delta SET funded_amnt = 22000 WHERE loan_id = 4420
+# MAGIC %sql UPDATE loans_delta SET funded_amnt = 50000 WHERE loan_id = 4420
 
 # COMMAND ----------
 
