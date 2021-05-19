@@ -1,5 +1,5 @@
 # Databricks notebook source
-# MAGIC %run "/Users/william.braccialli@databricks.com/IoT-Demo/part0-create-variables"
+# MAGIC %run "./part0-create-variables"
 
 # COMMAND ----------
 
@@ -140,13 +140,13 @@ poweroutput_df.writeStream \
 
 # COMMAND ----------
 
-maintenanceheaderquery = """CREATE TABLE IF NOT EXISTS {0}
-USING DELTA
-LOCATION '{1}'""".format(maintenanceheaderSilverTable, SILVER_PATH + "maintenanceheader")
+# maintenanceheaderquery = """CREATE TABLE IF NOT EXISTS {0}
+# USING DELTA
+# LOCATION '{1}'""".format(maintenanceheaderSilverTable, SILVER_PATH + "maintenanceheader")
 
-print(maintenanceheaderquery)
+# print(maintenanceheaderquery)
 
-spark.sql(maintenanceheaderquery)
+# spark.sql(maintenanceheaderquery)
 
 # COMMAND ----------
 
@@ -157,13 +157,13 @@ spark.sql(maintenanceheaderquery)
 
 # COMMAND ----------
 
-poweroutputquery = """CREATE TABLE IF NOT EXISTS {0}
-USING DELTA
-LOCATION '{1}'""".format(poweroutputSilverTable, SILVER_PATH + "poweroutput")
+# poweroutputquery = """CREATE TABLE IF NOT EXISTS {0}
+# USING DELTA
+# LOCATION '{1}'""".format(poweroutputSilverTable, SILVER_PATH + "poweroutput")
 
-print(poweroutputquery)
+# print(poweroutputquery)
 
-spark.sql(poweroutputquery)
+# spark.sql(poweroutputquery)
 
 # COMMAND ----------
 
@@ -174,16 +174,8 @@ spark.sql(poweroutputquery)
 
 # COMMAND ----------
 
-print(f"{maintenanceheaderSilverTable} row count: " + str(spark.sql(f"SELECT COUNT(1) AS CNT FROM {maintenanceheaderSilverTable}").first()[0]))
-
-# COMMAND ----------
-
 # MAGIC %sql
 # MAGIC SELECT COUNT(1) FROM iot_demo.maintenance_header
-
-# COMMAND ----------
-
-print(f"{poweroutputSilverTable} row count: " + str(spark.sql(f"SELECT COUNT(1) AS CNT FROM {poweroutputSilverTable}").first()[0]))
 
 # COMMAND ----------
 

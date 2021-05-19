@@ -1,15 +1,17 @@
 # Databricks notebook source
-# MAGIC %run "/Users/william.braccialli@databricks.com/IoT-Demo/part0-create-variables"
+# MAGIC %run "./part0-create-variables"
 
 # COMMAND ----------
 
 # MAGIC %md 
+# MAGIC 
+# MAGIC #Architecture
 # MAGIC <img src="https://mcg1stanstor00.blob.core.windows.net/images/demos/Azure Demos/Azure Databricks Lakehouse + with Azure Data Services.jpg" alt="" width="1400" height="1080">
 
 # COMMAND ----------
 
 # MAGIC %md 
-# MAGIC #####Goals for this demo</br>
+# MAGIC #Goals for this demo</br>
 # MAGIC 1) Azure Data Factory connects to source system and lands data into parquet file in Data Lake Landing Zone</br>
 # MAGIC 2) Azure Data Factory orchestrates the execution of a Databricks Notebook</br>
 # MAGIC 3) Databricks reads new and updated files (changed data) using Auto Loader and lands it into Delta Lake table</br>
@@ -18,6 +20,9 @@
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC 
+# MAGIC #Read files using Auto-Loader
+# MAGIC 
 # MAGIC Auto Loader is a feature in Databricks that allows Data Engineers to read new/changed files from a landing zone as a data stream without having to manage CDC.
 # MAGIC 
 # MAGIC https://docs.microsoft.com/en-us/azure/databricks/spark/latest/structured-streaming/auto-loader
@@ -51,48 +56,44 @@ parquetSchemaPoweroutput = poweroutput_Schema_df.schema
 # COMMAND ----------
 
 # read the maintenance_header records from the landing zone using Auto Loader
-maintenanceheader_df = (
-  spark.readStream.format("cloudFiles")
-  .options(**cloudfile)
-  .option("cloudFiles.useNotifications", "true")
-  .schema(parquetSchemaMaintenanceheader)
+maintenanceheader_df = spark.readStream.format("cloudFiles") \
+  .options(**cloudfile) \
+  .option("cloudFiles.useNotifications", "true") \
+  .schema(parquetSchemaMaintenanceheader) \
   .load("/mnt/landingzone/fleetmaintenance/maintenanceheader/")
-)
 
 # COMMAND ----------
 
 # read the power_output records from the landing zone using Auto Loader
-poweroutput_df = (
-  spark.readStream.format("cloudFiles")
-  .options(**cloudfile)
-  .option("cloudFiles.useNotifications", "true")
-  .schema(parquetSchemaPoweroutput)
+poweroutput_df = spark.readStream.format("cloudFiles") \
+  .options(**cloudfile) \
+  .option("cloudFiles.useNotifications", "true") \
+  .schema(parquetSchemaPoweroutput) \
   .load("/mnt/landingzone/fleetmaintenance/poweroutput/")
-)
 
 # COMMAND ----------
 
-(maintenanceheader_df.writeStream
-  .format("delta")
-  .outputMode("append")
-  .trigger(once=True)
-  .option("checkpointLocation", "/mnt/landingzone/checkPoint/fleetmaintenance/maintenanceheader/")
+maintenanceheader_df.writeStream \
+  .format("delta") \
+  .outputMode("append") \
+  .trigger(once=True) \
+  .option("checkpointLocation", "/mnt/landingzone/checkPoint/fleetmaintenance/maintenanceheader/") \
   .start("/mnt/demo/iot/silver/maintenanceheader")
-)
 
 # COMMAND ----------
 
-(poweroutput_df.writeStream
-  .format("delta")
-  .outputMode("append")
-  .trigger(once=True)
-  .option("checkpointLocation", "/mnt/landingzone/checkPoint/fleetmaintenance/poweroutput/")
+poweroutput_df.writeStream \
+  .format("delta") \
+  .outputMode("append") \
+  .trigger(once=True) \
+  .option("checkpointLocation", "/mnt/landingzone/checkPoint/fleetmaintenance/poweroutput/") \
   .start("/mnt/demo/iot/silver/poweroutput")
-)
 
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC 
+# MAGIC #Create delta tables
 # MAGIC Create tables on top of delta storage so that tables can be easily found and managed for end users
 
 # COMMAND ----------
@@ -111,10 +112,17 @@ poweroutput_df = (
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC SELECT COUNT(1) AS maintenance_header_count FROM iot_demo.maintenance_header
+# MAGIC %md
+# MAGIC 
+# MAGIC #Check data
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT COUNT(1) AS power_output_count FROM iot_demo.power_output
+# MAGIC SELECT 'maintenance_header' AS TableName, COUNT(1) AS count FROM iot_demo.maintenance_header
+# MAGIC UNION 
+# MAGIC SELECT 'power_output' AS TableName, COUNT(1) AS count FROM iot_demo.power_output
+
+# COMMAND ----------
+
+
