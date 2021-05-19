@@ -1,0 +1,1 @@
+The fleetmaintenance_sql_server.sql script contains the database DDL and inserts for creating the Azure SQL DB for this demo.  We are also providing the raw data in the form of CSV files if you'd like to skip this step. 
