@@ -1,10 +1,43 @@
 # Databricks notebook source
+# MAGIC %run "./part0-create-variables"
+
+# COMMAND ----------
+
 # MAGIC %md 
-# MAGIC #####Goals for this demo</br>
-# MAGIC 1) [IoT Simulator](https://azure-samples.github.io/raspberry-pi-web-simulator/) + [script](https://github.com/tomatoTomahto/azure_databricks_iot/blob/master/azure_iot_simulator.js) and configured for your IoT Hub writes events to IoT Hub</br>
-# MAGIC 2) Databricks reads IoT Hub and writes (streaming) files to Delta Lake (Bronze Layer - raw)</br>
-# MAGIC 3) Databricks reads Delta Lake (Bronze Layer - raw) and writes data to Delta Lake (Silver Layer - enriched)</br>
+# MAGIC #Goals for this demo
+# MAGIC 1. [IoT Simulator](https://azure-samples.github.io/raspberry-pi-web-simulator/) + [script](https://github.com/tomatoTomahto/azure_databricks_iot/blob/master/azure_iot_simulator.js) writes live events to your IoT Hub</br>
+# MAGIC 2. Databricks reads IoT Hub and writes (streaming) files to Delta Lake (Bronze Layer - raw)</br>
+# MAGIC 3. Databricks reads Delta Lake (Bronze Layer - raw) and writes data to Delta Lake (Silver Layer - enriched)</br>
 # MAGIC <img src="https://mcg1stanstor00.blob.core.windows.net/images/demos/Azure Demos/azure-integration-demo-part2-v2.png" alt="" width="600">
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC #References
+# MAGIC This demo is a short version of IoT Tutorial, check links below for detailed instructions:
+# MAGIC 1. [IoT Demo - Part1](https://databricks.com/blog/2020/08/03/modern-industrial-iot-analytics-on-azure-part-1.html)
+# MAGIC 2. [IoT Demo - Part2](https://databricks.com/blog/2020/08/11/modern-industrial-iot-analytics-on-azure-part-2.html)
+# MAGIC 3. [IoT Demo - Part3](https://databricks.com/blog/2020/08/20/modern-industrial-iot-analytics-on-azure-part-3.html)
+# MAGIC <br/>
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC #Run IoT Simulator
+# MAGIC 1. Open [IoT Simulator](https://azure-samples.github.io/raspberry-pi-web-simulator/)
+# MAGIC 2. Erase code on right-hand side of page
+# MAGIC 3. Load new code base form this [script](https://github.com/tomatoTomahto/azure_databricks_iot/blob/master/azure_iot_simulator.js) 
+# MAGIC 4. Replace connection string (line 15) with your IoT Hub details<br/>
+# MAGIC ```const connectionString = 'HostName=<hub_hostname>;DeviceId=<hub_deviceid;SharedAccessKey=<access_key>';```
+# MAGIC 5. Click on "Run" to start producing events
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC #Read streaming data from IoT Hub using Spark Streaming
 
 # COMMAND ----------
 
@@ -13,18 +46,10 @@ import time, os, json, requests
 from pyspark.sql import functions as F
 from pyspark.sql.functions import pandas_udf, PandasUDFType
 
-ROOT_PATH = f"/mnt/demo/iot/"
-CHECKPOINT_PATH = ROOT_PATH + "checkpoint/"
-BRONZE_PATH = ROOT_PATH + "bronze/"
-SILVER_PATH = ROOT_PATH + "silver/"
-GOLD_PATH = ROOT_PATH + "gold/"
-EVENT_HUB_NAME = "iothub-ehub-gui-test-i-9443584-b75fbb1d77"
-IOT_ENDPOINT = dbutils.secrets.get(scope="gui-keyvalt", key="iot-endpoint")
 ehConf = { 
   'eventhubs.connectionString':sc._jvm.org.apache.spark.eventhubs.EventHubsUtils.encrypt(IOT_ENDPOINT),
   'ehName':EVENT_HUB_NAME
 }
-
 
 # COMMAND ----------
 
@@ -68,6 +93,12 @@ write_weather_to_delta = (
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC 
+# MAGIC #Check Raw Data
+
+# COMMAND ----------
+
 display(iot_stream)
 
 # COMMAND ----------
@@ -79,7 +110,13 @@ spark.sql(f"CREATE TABLE IF NOT EXISTS iot_demo.weather_raw USING DELTA LOCATION
 
 # COMMAND ----------
 
+dbutils.fs.help()
+
+# COMMAND ----------
+
 # MAGIC %md
+# MAGIC 
+# MAGIC #Save data into Delta tables
 # MAGIC <img src="https://mcg1stanstor00.blob.core.windows.net/images/demos/Azure Demos/azure-integration-demo-part2-v2.png" alt="" width="600">
 
 # COMMAND ----------
@@ -146,8 +183,14 @@ while True:
     break
   except Exception as e:
     print("error, trying agian in 3 seconds")
+    print(e)
     time.sleep(3)
     pass
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #Check Silver data
 
 # COMMAND ----------
 
